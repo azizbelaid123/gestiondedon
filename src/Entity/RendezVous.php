@@ -22,17 +22,16 @@ class RendezVous
     #[ORM\Column(length: 255)]
     private ?string $statut = null;
 
+    #[ORM\ManyToOne(inversedBy: 'rendezVouses')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Donateur $donateur = null;
 
     #[ORM\ManyToOne(inversedBy: 'rendezVouses')]
-#[ORM\JoinColumn(nullable: false)]
-private ?Donateur $donateur = null;
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Collecte $collecte = null;
 
-#[ORM\ManyToOne(inversedBy: 'rendezVouses')]
-#[ORM\JoinColumn(nullable: false)]
-private ?Collecte $collecte = null;
-
-#[ORM\OneToOne(mappedBy: 'rendezVous', cascade: ['persist', 'remove'])]
-private ?Don $don = null;
+    #[ORM\OneToOne(mappedBy: 'rendezVous', cascade: ['persist', 'remove'])]
+    private ?Don $don = null;
 
     public function getId(): ?int
     {
@@ -73,5 +72,59 @@ private ?Don $don = null;
         $this->statut = $statut;
 
         return $this;
+    }
+
+    // ⚠️ AJOUTER CES MÉTHODES POUR LES RELATIONS
+
+    public function getDonateur(): ?Donateur
+    {
+        return $this->donateur;
+    }
+
+    public function setDonateur(?Donateur $donateur): static
+    {
+        $this->donateur = $donateur;
+
+        return $this;
+    }
+
+    public function getCollecte(): ?Collecte
+    {
+        return $this->collecte;
+    }
+
+    public function setCollecte(?Collecte $collecte): static
+    {
+        $this->collecte = $collecte;
+
+        return $this;
+    }
+
+    public function getDon(): ?Don
+    {
+        return $this->don;
+    }
+
+    public function setDon(?Don $don): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($don === null && $this->don !== null) {
+            $this->don->setRendezVous(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($don !== null && $don->getRendezVous() !== $this) {
+            $don->setRendezVous($this);
+        }
+
+        $this->don = $don;
+
+        return $this;
+    }
+
+    // Méthode utile pour l'affichage
+    public function __toString(): string
+    {
+        return 'RDV ' . $this->dateHeureDebut->format('d/m/Y H:i') . ' - ' . $this->donateur->getPrenom();
     }
 }

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\CollecteRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CollecteRepository::class)]
@@ -29,16 +31,16 @@ class Collecte
     private ?string $statut = null;
 
     #[ORM\ManyToOne(inversedBy: 'collectes')]
-#[ORM\JoinColumn(nullable: false)]
-private ?Lieu $lieu = null;
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Lieu $lieu = null;
 
-#[ORM\OneToMany(mappedBy: 'collecte', targetEntity: RendezVous::class)]
-private Collection $rendezVouses;
+    #[ORM\OneToMany(mappedBy: 'collecte', targetEntity: RendezVous::class)]
+    private Collection $rendezVouses;
 
-public function __construct()
-{
-    $this->rendezVouses = new ArrayCollection();
-}
+    public function __construct()
+    {
+        $this->rendezVouses = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -103,5 +105,55 @@ public function __construct()
         $this->statut = $statut;
 
         return $this;
+    }
+
+    // ⚠️ AJOUTER CES MÉTHODES POUR LES RELATIONS
+
+    public function getLieu(): ?Lieu
+    {
+        return $this->lieu;
+    }
+
+    public function setLieu(?Lieu $lieu): static
+    {
+        $this->lieu = $lieu;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, RendezVous>
+     */
+    public function getRendezVouses(): Collection
+    {
+        return $this->rendezVouses;
+    }
+
+    public function addRendezVouse(RendezVous $rendezVouse): static
+    {
+        if (!$this->rendezVouses->contains($rendezVouse)) {
+            $this->rendezVouses->add($rendezVouse);
+            $rendezVouse->setCollecte($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRendezVouse(RendezVous $rendezVouse): static
+    {
+        if ($this->rendezVouses->removeElement($rendezVouse)) {
+            // set the owning side to null (unless already changed)
+            if ($rendezVouse->getCollecte() === $this) {
+                $rendezVouse->setCollecte(null);
+            }
+        }
+
+        return $this;
+    }
+
+    // Méthode utile pour l'affichage
+    public function __toString(): string
+    {
+        return $this->nom . ' (' . $this->dateDebut->format('d/m/Y') . ')';
     }
 }

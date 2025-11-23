@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Baromètre des Stocks de Sang{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1 class="text-center mb-4">📊 Baromètre des Stocks de Sang</h1>
+    <p class="text-center lead">État des réserves - Dernière mise à jour: {{ "now"|date('d/m/Y à H:i') }}</p>
+
+    <div class="row">
+        {% for stock in stocks %}
+        <div class="col-md-3 mb-4">
+            <div class="card text-center">
+                <div class="card-header 
+                    {% if stock.niveauActuel < stock.niveauAlerte %}bg-danger
+                    {% elseif stock.niveauActuel < 50 %}bg-warning
+                    {% else %}bg-success{% endif %} text-white">
+                    <h4 class="mb-0">{{ stock.groupeSanguin }}</h4>
+                </div>
+                <div class="card-body">
+                    <h2>{{ stock.niveauActuel }}%</h2>
+                    <div class="progress mb-2">
+                        <div class="progress-bar 
+                            {% if stock.niveauActuel < stock.niveauAlerte %}bg-danger
+                            {% elseif stock.niveauActuel < 50 %}bg-warning
+                            {% else %}bg-success{% endif %}" 
+                            style="width: {{ stock.niveauActuel }}%">
+                        </div>
+                    </div>
+                    <p class="mb-1">
+                        <small class="text-muted">
+                            {% if stock.niveauActuel < stock.niveauAlerte %}🆘 Critique
+                            {% elseif stock.niveauActuel < 50 %}⚠️ Moyen
+                            {% else %}✅ Bon{% endif %}
+                        </small>
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="alert alert-warning text-center">
+                <h5>📭 Aucune donnée de stock disponible</h5>
+                <p class="mb-0">Les niveaux de stock n'ont pas encore été initialisés.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

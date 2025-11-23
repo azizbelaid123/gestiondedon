@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Collectes de Sang{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1 class="text-center mb-4">📅 Collectes de Sang</h1>
+    <p class="text-center lead">Découvrez les prochaines collectes près de chez vous</p>
+
+    <div class="row">
+        {% for collecte in collectes %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="card-title mb-0">{{ collecte.nom }}</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        <strong>📅 Date:</strong> {{ collecte.dateDebut ? collecte.dateDebut|date('d/m/Y H:i') : 'Non définie' }}<br>
+                        <strong>📍 Lieu:</strong> 
+                        {% if collecte.lieu %}
+                            {{ collecte.lieu.nomLieu }} - {{ collecte.lieu.ville }}
+                        {% else %}
+                            Non défini
+                        {% endif %}<br>
+                        <strong>👥 Capacité:</strong> {{ collecte.capaciteMaximale }} personnes<br>
+                        <strong>📊 Statut:</strong> 
+                        <span class="badge bg-warning">{{ collecte.statut }}</span>
+                    </p>
+                </div>
+                <div class="card-footer">
+                    {% if app.user %}
+                        <a href="#" class="btn btn-danger btn-sm">Prendre RDV</a>
+                    {% else %}
+                        <a href="{{ path('app_register') }}" class="btn btn-outline-danger btn-sm">S'inscrire pour participer</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <h4>📭 Aucune collecte programmée</h4>
+                <p class="mb-0">Aucune collecte n'est actuellement programmée. Revenez plus tard.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

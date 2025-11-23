@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\LieuRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: LieuRepository::class)]
@@ -25,14 +27,13 @@ class Lieu
     #[ORM\Column(length: 255)]
     private ?string $codePostal = null;
 
-    
     #[ORM\OneToMany(mappedBy: 'lieu', targetEntity: Collecte::class)]
-private Collection $collectes;
+    private Collection $collectes;
 
-public function __construct()
-{
-    $this->collectes = new ArrayCollection();
-}
+    public function __construct()
+    {
+        $this->collectes = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -85,5 +86,41 @@ public function __construct()
         $this->codePostal = $codePostal;
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Collecte>
+     */
+    public function getCollectes(): Collection
+    {
+        return $this->collectes;
+    }
+
+    public function addCollecte(Collecte $collecte): static
+    {
+        if (!$this->collectes->contains($collecte)) {
+            $this->collectes->add($collecte);
+            $collecte->setLieu($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCollecte(Collecte $collecte): static
+    {
+        if ($this->collectes->removeElement($collecte)) {
+            // set the owning side to null (unless already changed)
+            if ($collecte->getLieu() === $this) {
+                $collecte->setLieu(null);
+            }
+        }
+
+        return $this;
+    }
+
+    // Méthode utile pour l'affichage
+    public function __toString(): string
+    {
+        return $this->nomLieu . ' - ' . $this->ville;
     }
 }

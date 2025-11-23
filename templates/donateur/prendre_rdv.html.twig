@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Prendre Rendez-vous{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">📅 Prendre un Rendez-vous</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Informations sur la collecte -->
+                    <div class="alert alert-info">
+                        <h5>Collecte: {{ collecte.nom }}</h5>
+                        <p class="mb-1">
+                            <strong>📍 Lieu:</strong> {{ collecte.lieu.nomLieu }} - {{ collecte.lieu.ville }}<br>
+                            <strong>📅 Dates:</strong> Du {{ collecte.dateDebut|date('d/m/Y H:i') }} au {{ collecte.dateFin|date('d/m/Y H:i') }}<br>
+                            <strong>👥 Capacité:</strong> {{ collecte.capaciteMaximale }} personnes
+                        </p>
+                    </div>
+
+                    <!-- Formulaire de rendez-vous -->
+                    {{ form_start(form) }}
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form_row(form.dateHeureDebut, {
+                                    'label': 'Date et heure de début *',
+                                    'attr': {'class': 'form-control'}
+                                }) }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form_row(form.dateHeureFin, {
+                                    'label': 'Date et heure de fin *', 
+                                    'attr': {'class': 'form-control'}
+                                }) }}
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                ✅ Confirmer le rendez-vous
+                            </button>
+                            <a href="{{ path('app_collecte_index') }}" class="btn btn-outline-secondary ms-2">
+                                ← Retour aux collectes
+                            </a>
+                        </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+
+            <!-- Information importante -->
+            <div class="card mt-4">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0">💡 Information importante</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li>✅ Présentez-vous 15 minutes avant l'heure du rendez-vous</li>
+                        <li>✅ Apportez une pièce d'identité</li>
+                        <li>✅ N'oubliez pas de vous hydrater avant le don</li>
+                        <li>✅ Évitez les activités physiques intenses après le don</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

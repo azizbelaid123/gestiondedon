@@ -26,15 +26,15 @@ class Don
     #[ORM\Column]
     private ?bool $apte = null;
 
-    #[ORM\Column(type: Types::TEXT)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $commentaire = null;
 
     #[ORM\ManyToOne(inversedBy: 'dons')]
-#[ORM\JoinColumn(nullable: false)]
-private ?Donateur $donateur = null;
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Donateur $donateur = null;
 
-#[ORM\OneToOne(inversedBy: 'don', cascade: ['persist', 'remove'])]
-private ?RendezVous $rendezVous = null;
+    #[ORM\OneToOne(inversedBy: 'don', cascade: ['persist', 'remove'])]
+    private ?RendezVous $rendezVous = null;
 
     public function getId(): ?int
     {
@@ -94,10 +94,42 @@ private ?RendezVous $rendezVous = null;
         return $this->commentaire;
     }
 
-    public function setCommentaire(string $commentaire): static
+    public function setCommentaire(?string $commentaire): static
     {
         $this->commentaire = $commentaire;
 
         return $this;
+    }
+
+    // ⚠️ AJOUTER CES MÉTHODES POUR LES RELATIONS
+
+    public function getDonateur(): ?Donateur
+    {
+        return $this->donateur;
+    }
+
+    public function setDonateur(?Donateur $donateur): static
+    {
+        $this->donateur = $donateur;
+
+        return $this;
+    }
+
+    public function getRendezVous(): ?RendezVous
+    {
+        return $this->rendezVous;
+    }
+
+    public function setRendezVous(?RendezVous $rendezVous): static
+    {
+        $this->rendezVous = $rendezVous;
+
+        return $this;
+    }
+
+    // Méthode utile pour l'affichage
+    public function __toString(): string
+    {
+        return 'Don du ' . $this->dateDon->format('d/m/Y') . ' - ' . $this->donateur->getPrenom();
     }
 }

@@ -1,0 +1,132 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tableau de Bord Donateur{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1>Tableau de Bord</h1>
+            <p class="lead">Bienvenue, {{ donateur.prenom }} {{ donateur.nom }}</p>
+        </div>
+    </div>
+
+    <!-- Cartes principales -->
+    <div class="row mt-4">
+        <!-- Prochain Rendez-vous -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">📅 Prochain Rendez-vous</h5>
+                </div>
+                <div class="card-body">
+                    {% if prochain_rendez_vous %}
+                        <div class="mb-3">
+                            <strong>Collecte:</strong> {{ prochain_rendez_vous.collecte.nom }}<br>
+                            <strong>Date:</strong> {{ prochain_rendez_vous.dateHeureDebut|date('d/m/Y H:i') }}<br>
+                            <strong>Lieu:</strong> {{ prochain_rendez_vous.collecte.lieu.nomLieu }}<br>
+                            <strong>Statut:</strong> 
+                            <span class="badge 
+                                {% if prochain_rendez_vous.statut == 'Confirmé' %}bg-success
+                                {% elseif prochain_rendez_vous.statut == 'Annulé' %}bg-danger
+                                {% else %}bg-warning{% endif %}">
+                                {{ prochain_rendez_vous.statut }}
+                            </span>
+                        </div>
+                        {% if prochain_rendez_vous.statut == 'Confirmé' %}
+                            <form action="{{ path('app_donateur_rdv_annuler', {'id': prochain_rendez_vous.id}) }}" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir annuler ce rendez-vous ?')">
+                                <input type="hidden" name="_token" value="{{ csrf_token('annuler' ~ prochain_rendez_vous.id) }}">
+                                <button type="submit" class="btn btn-danger btn-sm">Annuler le RDV</button>
+                            </form>
+                        {% endif %}
+                    {% else %}
+                        <p class="text-muted">Aucun rendez-vous programmé.</p>
+                        <a href="{{ path('app_collecte_index') }}" class="btn btn-primary">Prendre un rendez-vous</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Éligibilité au Don -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">💉 Éligibilité au Don</h5>
+                </div>
+                <div class="card-body">
+                    {% if donateur.derniereDateDon %}
+                        <p><strong>Dernier don:</strong> {{ donateur.derniereDateDon|date('d/m/Y') }}</p>
+                    {% else %}
+                        <p><strong>Dernier don:</strong> Aucun don enregistré</p>
+                    {% endif %}
+
+                    {% if est_eligible %}
+                        <div class="alert alert-success">
+                            <strong>✅ Vous êtes éligible !</strong>
+                            <p class="mb-0">Vous pouvez donner votre sang.</p>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning">
+                            <strong>⏳ Prochaine éligibilité</strong>
+                            <p class="mb-0">Vous serez éligible le {{ date_eligible|date('d/m/Y') }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Informations personnelles -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">👤 Mes Informations</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Nom:</strong> {{ donateur.nom }}</p>
+                            <p><strong>Prénom:</strong> {{ donateur.prenom }}</p>
+                            <p><strong>Email:</strong> {{ donateur.email }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Groupe Sanguin:</strong> {{ donateur.groupeSanguin }}</p>
+                            <p><strong>Nombre de dons:</strong> {{ donateur.dons|length }}</p>
+                            <p><strong>Statut:</strong> <span class="badge bg-success">Donateur actif</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions rapides -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">🚀 Actions Rapides</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-4 mb-3">
+                            <a href="{{ path('app_collecte_index') }}" class="btn btn-outline-primary w-100">
+                                📅 Prendre RDV
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <a href="{{ path('app_donateur_historique') }}" class="btn btn-outline-success w-100">
+                                📊 Historique
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                           <a href="{{ path('app_stock') }}" class="btn btn-outline-info w-100">💉 Voir Stocks</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
